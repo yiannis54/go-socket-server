@@ -1,0 +1,45 @@
+syntax = "proto3";
+
+package notifications;
+
+import "google/protobuf/any.proto";
+import "google/protobuf/empty.proto";
+
+option go_package = "./notificationspb"; // Update this as needed
+
+service NotificationService {
+  rpc Broadcast(Message) returns (google.protobuf.Empty);
+  rpc NotifyRoom(MessageWithRoom) returns (google.protobuf.Empty);
+  rpc PrivateNotify(MessageWithUser) returns (google.protobuf.Empty);
+}
+
+// Enum representing message type.
+// Protobuf enums use UPPER_SNAKE_CASE by convention.
+enum MessageType {
+  MESSAGE_TYPE_UNSPECIFIED = 0;
+  TYPE_ERROR = 1;
+  TYPE_INFO = 2;
+}
+
+// Base notification message.
+message Message {
+  MessageType type = 1;
+  string entityId = 2;
+
+  // Use Any for flexible/dynamic message content
+  google.protobuf.Any message = 3;
+}
+
+// Message with a room field.
+message MessageWithRoom {
+  Message base = 1;
+
+  // Room name is optional (nullable)
+  optional string room = 2;
+}
+
+// Message with a user ID field.
+message MessageWithUser {
+  Message base = 1;
+  string userId = 2;
+}
